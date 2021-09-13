@@ -8,7 +8,7 @@ import glob
 SEED = 139
 SEP = os.path.sep
 IMAGE_SIZE = 256
-MODEL_PATH = "generator.h5"
+MODEL_PATH = "Models/GAN_1/generator/gen_model_1775.h5"
 OUTPUT_PATH = "output_images"
 
 '''Set seeds'''
@@ -27,6 +27,9 @@ targets_names = sorted([path.split("/")[-1]
 
 '''Load the model'''
 gan_one = tf.keras.models.load_model(MODEL_PATH)
+
+
+
 
 '''Create output folder'''
 if not os.path.exists("output_images"):
@@ -109,7 +112,7 @@ def change_destruction_level(image, destruction_level):
 
     if isinstance(destruction_level, str):
         try:
-            destruction_level = destuction_levels[destruction_level]
+            destruction_level = destruction_levels[destruction_level]
         except KeyError:
             raise UnsupportedLevelError(
                 f"{destruction_level} is not a supported destruction level. The only supported string levels are 'no damage', 'minor', 'major', and 'destroyed'.")
@@ -178,11 +181,12 @@ def load_image(filename, augment=True, destruction_level=0):
 
     filename_input1 = filename
     filename_input2 = filename.split(".png")[0] + "_target.png"
+    filename_input2 = filename_input2.replace("pre_disaster_images", "targets")
 
     pre_image = tf.cast(tf.image.decode_png(tf.io.read_file(
-        pre_image_path + SEP + filename_input1), channels=3), tf.float32)
+         filename_input1), channels=3), tf.float32)
     mask_image = tf.cast(tf.image.decode_png(tf.io.read_file(
-        targets_path + SEP + filename_input2), channels=1), tf.float32)
+         filename_input2), channels=1), tf.float32)
 
     modified_mask = change_destruction_level(mask_image, destruction_level)
     new_input = tf.experimental.numpy.dstack((modified_mask, pre_image))
@@ -208,8 +212,10 @@ def create_new_data(train_pre_images_names, train_masks_names, model=gan_one, nu
         # Get the respective names of the images
         pre_image_name = train_pre_images_names[i]
         post_image_name = pre_image_name.replace("post", "pre")
+        post_image_name = post_image_name.split("\\")[-1][:-4]
 
-        post_mask_name = train_masks_names[i]
+        post_mask_name = train_masks_names[i].split("\\")[-1][:-4]
+
 
         # Dictionary
         scaling_values = {1: 255, 2: 127.5, 3: 85, 4: 63.75}
