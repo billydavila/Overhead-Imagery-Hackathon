@@ -1,7 +1,7 @@
 # Overhead-Imagery-Hackathon
 
 ## Reproducing the Outputs
-Create a virtual environment for the repository. Use ```git lfs``` or ```git lfs clone``` to properly download the trained models. 
+Create a virtual environment for the repository. Use [Git LFS](https://git-lfs.github.com/) and run ```git lfs``` or ```git lfs clone``` to properly download the trained models. 
 
 Install the necessary modules using `pip`.
 
